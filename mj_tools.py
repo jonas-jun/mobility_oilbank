@@ -71,3 +71,32 @@ class check_price:
             self.prices.setdefault('D', []).append(i[7])
         mean_G, mean_D = np.mean(self.prices['G']), np.mean(self.prices['D'])
         return mean_G, mean_D
+
+
+class mapping:
+    '''
+    folium mapping class
+    you should input DataFrame format,
+    and need columns ['name', 'do_brand', 'self', 'lat', 'lon]
+    '''
+    def __init__(self, zoom_start=8):
+        self.m = folium.Map(location = [36.5053542, 127.70434191], zoom_start=zoom_start)
+
+    def add_circle(self, df, color, radius=5):
+
+        self.df = df
+        c_options = ['beige', 'black', 'blue', 'cadetblue', 'darkblue', 'darkgreen', 
+        'darkpurple', 'darkred', 'gray', 'green', 'lightblue', 'lightgray', 'lightgreen', 
+        'lightred', 'orange', 'pink', 'purple', 'red', 'white']
+        if color not in c_options:
+            raise ValueError ('Invalid color option')
+        
+        for i in range(len(self.df)):
+            folium.CircleMarker(location=[list(self.df.lat)[i], list(self.df.lon)[i]],
+                popup=list(self.df.name)[i], color=color, radius=radius).add_to(self.m)
+        
+        print('added {} points!'.format(len(self.df)))
+        
+    def export_map(self, filename):
+        self.filename = str(filename)+'.html'
+        self.m.save(self.filename)
